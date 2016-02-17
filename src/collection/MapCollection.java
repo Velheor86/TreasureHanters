@@ -8,7 +8,12 @@ import enums.MoveAction;
 import enums.MovingDirect;
 import interfaces.map.GameCollection;
 import Objects.Nothing;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.Timer;
 
 
 public class MapCollection implements GameCollection {
@@ -75,7 +80,7 @@ public class MapCollection implements GameCollection {
                     case EXIT:{
 
                     }
-                    case STAY:{
+                    case STAY: {
                         action = MoveAction.STAY;
                         break;
                     }
@@ -124,4 +129,6 @@ public class MapCollection implements GameCollection {
         }
         return newcoord;
     }
+
+
 }

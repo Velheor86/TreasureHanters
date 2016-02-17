@@ -9,12 +9,16 @@ import Objects.Wall;
 import creator.MapCreator;
 import enums.GameObjectType;
 import enums.MapSource;
+import enums.MovingDirect;
 import interfaces.map.PaintMap;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class JTableMap implements PaintMap {
 
@@ -94,6 +98,9 @@ public class JTableMap implements PaintMap {
 
     @Override
     public AbstractGameMap getGameMap() {
+        paintMap();
         return gamemap;
     }
+
+
 }

@@ -14,10 +14,11 @@ import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 
 public class FrameGame extends FrameBaseChild {
     private PaintMap map;
-    //private AbstractMoveObject obj;
+
 
     private JButton btnleft;
     private JButton btndown;
@@ -47,6 +48,8 @@ public class FrameGame extends FrameBaseChild {
         jPanel1.add(map.getMap());
         jLabel3.setText(String.valueOf(Heroe.getScore()));
         jLabel4.setText(String.valueOf(map.getGameMap().getLimit()));
+        MoveTimer timer = new MoveTimer();
+        timer.start();
 
     }
 
@@ -224,9 +227,6 @@ public class FrameGame extends FrameBaseChild {
 
         setSize(616,413);
 
-
-
-
     }
 
 
@@ -250,10 +250,12 @@ public class FrameGame extends FrameBaseChild {
         }
 
         private void moving(MovingDirect direct, GameObjectType type) {
+
             MoveAction action = map.getGameMap().getGameCollection().moveObject(direct, type);
             if (action == MoveAction.DIE || map.getGameMap().getLimit()== 0){
                 JOptionPane.showConfirmDialog(null, "Поражение", "Вы проиграли!", JOptionPane.PLAIN_MESSAGE);
                 closeFrame();
+
             }
             else if (action == MoveAction.STAY){
 
@@ -263,11 +265,59 @@ public class FrameGame extends FrameBaseChild {
                 map.getGameMap().setLimit(map.getGameMap().getLimit() - 1);
                 jLabel4.setText(String.valueOf(map.getGameMap().getLimit()));
                 jLabel3.setText(String.valueOf(Heroe.getScore()));
-                map.paintMap();
             }
 
         }
 
 
     }
+
+
+    private class MoveTimer implements ActionListener {
+        private javax.swing.Timer time;
+
+        private MoveTimer() {
+            time = new javax.swing.Timer(1000, this);
+            time.setInitialDelay(0);
+        }
+
+        public  void start() {
+            time.start();
+        }
+
+        public void stop() {
+            time.stop();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            map.getGameMap().getGameCollection().moveObject(randomDirect(),GameObjectType.MONSTER);
+        }
+
+
+        private MovingDirect randomDirect(){
+            Random r = new Random();
+            MovingDirect dir = null;
+            switch (r.nextInt(4)){
+                case 0:{
+                    dir = MovingDirect.UP;
+                    break;
+                }
+                case 1:{
+                    dir = MovingDirect.DOWN;
+                    break;
+                }
+                case 2:{
+                    dir = MovingDirect.LEFT;
+                    break;
+                }
+                case 3:{
+                    dir = MovingDirect.RIGHT;
+                    break;
+                }
+            }
+            return dir;
+        }
+    }
+
 }

@@ -24,10 +24,12 @@ public class Heroe extends AbstractMoveObject {
     @Override
     public MoveAction move(AbstractGameObject obj) {
             MoveAction moveResult = null;
+        if (obj == null){
+            return MoveAction.STAY;
+        }
         switch (obj.getType()){
             case NOTHING:{
                 moveResult = MoveAction.MOVING;
-
                 break;
             }
             case MONSTER:{
