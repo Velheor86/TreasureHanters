@@ -25,6 +25,9 @@ public class Demon extends AbstractMoveObject {
     @Override
     public MoveAction move(AbstractGameObject obj) {
         MoveAction x = null;
+        if (obj == null){
+            return MoveAction.STAY;
+        }
         switch (obj.getType()){
             case HEROE:{
                 x = MoveAction.DIE;
