@@ -33,7 +33,7 @@ public class JTableMap implements PaintMap {
         table.setShowHorizontalLines(false);
         table.setShowVerticalLines(false);
         table.setTableHeader(null);
-        table.setRowHeight(26);
+        table.setRowHeight(30);
         table.setRowSelectionAllowed(false);
 
         gamemap = MapCreator.getJmap().createMap(type,collection);
