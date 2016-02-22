@@ -4,10 +4,13 @@ import collection.MapCollection;
 import enums.MapSource;
 import gui.map.JTableMap;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 
 public class FrameMainMenu extends JFrame {
 
@@ -110,4 +113,24 @@ public class FrameMainMenu extends JFrame {
         });
 
     }
+     {
+        File soundFile = new File("2.wav"); //Звуковой файл
+         AudioInputStream ais = null;
+         Clip clip = null;
+        try {
+            ais = AudioSystem.getAudioInputStream(soundFile);
+            clip = AudioSystem.getClip();
+            clip.open(ais);
+        } catch (LineUnavailableException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }catch (UnsupportedAudioFileException e){
+            e.printStackTrace();
+        }
+
+        clip.setFramePosition(0);
+        clip.start();
+    }
+
 }

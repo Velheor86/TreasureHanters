@@ -21,7 +21,7 @@ public abstract class FrameBaseChild extends JFrame {
         super.setVisible(true);
         super.setLocationRelativeTo(null);
         super.setResizable(false);
-
+        super.requestFocusInWindow();
     }
 
     protected void closeFrame(){

@@ -6,17 +6,15 @@ import Objects.Coordinate;
 import enums.GameObjectType;
 import enums.MoveAction;
 import enums.MovingDirect;
-import interfaces.map.GameCollection;
+import Objects.Heroe;
 import Objects.Nothing;
+import observer.MapListener;
+import observer.MoveListener;
 
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.Timer;
 
 
-public class MapCollection implements GameCollection {
+public class MapCollection extends MapListener {
 
 
     private HashMap<Coordinate, AbstractGameObject> gameObject = new HashMap();
@@ -56,8 +54,9 @@ public class MapCollection implements GameCollection {
     }
 
     @Override
-    public MoveAction moveObject(MovingDirect direct, GameObjectType type) {
+    public void moveObject(MovingDirect direct, GameObjectType type) {
             MoveAction action = null;
+            Heroe heroe = (Heroe)getGameObject(GameObjectType.HEROE).get(0);
         for (AbstractGameObject gameObject : this.getGameObject(type)) {
             if (gameObject instanceof AbstractMoveObject) {
 
@@ -88,7 +87,7 @@ public class MapCollection implements GameCollection {
                 ((AbstractMoveObject) gameObject).changeIcon(direct,type);
             }
         }
-        return action;
+        notifyListener(action,heroe);
     }
 
     private void swapObject(AbstractGameObject firstObject, AbstractGameObject secondObject) {
@@ -128,6 +127,16 @@ public class MapCollection implements GameCollection {
 
         }
         return newcoord;
+    }
+
+
+
+
+    @Override
+    public void notifyListener(MoveAction action, Heroe heroe) {
+            for (MoveListener listener:getListener()){
+                listener.notifyAction(action,heroe);
+            }
     }
 
 

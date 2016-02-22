@@ -1,25 +1,25 @@
 package gui;
 
 
+
+import Objects.Demon;
 import Objects.Heroe;
 import enums.GameObjectType;
 import enums.MoveAction;
 import enums.MovingDirect;
 import interfaces.map.PaintMap;
 import interfaces.object.MoveObject;
+import observer.MoveListener;
 
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.SoftBevelBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Random;
 
-public class FrameGame extends FrameBaseChild {
+public class FrameGame extends FrameBaseChild implements MoveListener {
     private PaintMap map;
-
-
     private JButton btnleft;
     private JButton btndown;
     private JButton btnright;
@@ -35,6 +35,7 @@ public class FrameGame extends FrameBaseChild {
     private JPanel jPanel2;
     private JPanel jPanel3;
     private JSeparator jSeparator1;
+    private MoveTimer timer = new MoveTimer();
 
     public FrameGame() {
         initComponents();
@@ -43,17 +44,17 @@ public class FrameGame extends FrameBaseChild {
     public void setMap(PaintMap map){
         this.map = map;
         map.paintMap();
-
         jPanel1.removeAll();
         jPanel1.add(map.getMap());
         jLabel3.setText(String.valueOf(Heroe.getScore()));
         jLabel4.setText(String.valueOf(map.getGameMap().getLimit()));
-        MoveTimer timer = new MoveTimer();
         timer.start();
+        map.getGameMap().getGameCollection().addListener(this);
 
     }
 
     private void initComponents() {
+
 
         jSeparator1 = new JSeparator();
         jPanel1 = new JPanel();
@@ -109,6 +110,8 @@ public class FrameGame extends FrameBaseChild {
         btnwait.setBackground(UIManager.getDefaults().getColor("info"));
         btnwait.setText("Пропустить");
         btnwait.addActionListener(lis);
+
+
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -227,48 +230,50 @@ public class FrameGame extends FrameBaseChild {
 
         setSize(616,413);
 
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_UP)moving(MovingDirect.UP, GameObjectType.HEROE);
+                if (e.getKeyCode() == KeyEvent.VK_DOWN)moving(MovingDirect.DOWN, GameObjectType.HEROE);
+                if (e.getKeyCode() == KeyEvent.VK_LEFT)moving(MovingDirect.LEFT, GameObjectType.HEROE);
+                if (e.getKeyCode() == KeyEvent.VK_RIGHT)moving(MovingDirect.RIGHT, GameObjectType.HEROE);
+            }
+        });
     }
-
 
 
     private class ButtonListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == btnleft) {
-                moving(MovingDirect.LEFT, GameObjectType.HEROE);
-            } else if (e.getSource() == btnright) {
-                moving(MovingDirect.RIGHT, GameObjectType.HEROE);
-            } else if (e.getSource() == btnup) {
-                moving(MovingDirect.UP, GameObjectType.HEROE);
-            } else if (e.getSource() == btndown) {
-                moving(MovingDirect.DOWN, GameObjectType.HEROE);
-            } else if (e.getSource() == btnwait) {
-            } else if (e.getSource() == btnmenu) closeFrame();
-            else if (e.getSource() == btnsave) {
-            }
+            if (e.getSource() == btnleft)  moving(MovingDirect.LEFT, GameObjectType.HEROE);
+            if (e.getSource() == btnright) moving(MovingDirect.RIGHT, GameObjectType.HEROE);
+            if (e.getSource() == btnup)    moving(MovingDirect.UP, GameObjectType.HEROE);
+            if (e.getSource() == btndown)  moving(MovingDirect.DOWN, GameObjectType.HEROE);
+            if (e.getSource() == btnwait)
+            if (e.getSource() == btnmenu) closeFrame();
+            if (e.getSource() == btnsave);
         }
+    }
 
-        private void moving(MovingDirect direct, GameObjectType type) {
+    private void moving(MovingDirect direct, GameObjectType type) {
+        map.getGameMap().getGameCollection().moveObject(direct, type);
+    }
 
-            MoveAction action = map.getGameMap().getGameCollection().moveObject(direct, type);
-            if (action == MoveAction.DIE || map.getGameMap().getLimit()== 0){
-                JOptionPane.showConfirmDialog(null, "Поражение", "Вы проиграли!", JOptionPane.PLAIN_MESSAGE);
-                closeFrame();
+    @Override
+    public void notifyAction(MoveAction action, Heroe heroe) {
 
-            }
-            else if (action == MoveAction.STAY){
-
-            }
-            else
-            {
-                map.getGameMap().setLimit(map.getGameMap().getLimit() - 1);
-                jLabel4.setText(String.valueOf(map.getGameMap().getLimit()));
-                jLabel3.setText(String.valueOf(Heroe.getScore()));
-            }
-
+        if (action == MoveAction.DIE || map.getGameMap().getLimit()== 0){
+            timer.stop();
+            JOptionPane.showConfirmDialog(null, "Поражение", "Вы проиграли!", JOptionPane.PLAIN_MESSAGE);
+            closeFrame();
         }
-
+        if (action == MoveAction.STAY){}
+        if(action==MoveAction.COLLECT){
+            jLabel3.setText(String.valueOf(Heroe.getScore()));
+        }
+        jLabel4.setText(String.valueOf(map.getGameMap().getLimit()));
+        map.paintMap();
 
     }
 
@@ -277,7 +282,7 @@ public class FrameGame extends FrameBaseChild {
         private javax.swing.Timer time;
 
         private MoveTimer() {
-            time = new javax.swing.Timer(1000, this);
+            time = new javax.swing.Timer(500, this);
             time.setInitialDelay(0);
         }
 
@@ -292,6 +297,7 @@ public class FrameGame extends FrameBaseChild {
         @Override
         public void actionPerformed(ActionEvent e) {
             map.getGameMap().getGameCollection().moveObject(randomDirect(),GameObjectType.MONSTER);
+
         }
 
 
